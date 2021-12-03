@@ -1,0 +1,11 @@
+# Day 1: Sonar Sweep
+
+## Setup
+
+```elixir
+inputs =
+  File.read!("./2021/day_01_input.txt")
+  |> String.split("\n")
+  |> Enum.reject(&(&1 == ""))
+  |> Enum.map(&String.to_integer/1)
+```
