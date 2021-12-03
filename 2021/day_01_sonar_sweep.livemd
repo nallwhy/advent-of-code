@@ -147,3 +147,16 @@ inputs
 ```output
 1611
 ```
+
+```elixir
+# better
+
+inputs
+|> Enum.chunk_every(4, 1, :discard)
+|> Enum.filter(fn [n0, _n1, _n2, n3] -> n3 > n0 end)
+|> Enum.count()
+```
+
+```output
+1611
+```
