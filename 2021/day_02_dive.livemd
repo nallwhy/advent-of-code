@@ -5,6 +5,14 @@
 ## Setup
 
 ```elixir
+Mix.install([{:nx, github: "elixir-nx/nx", sparse: "nx"}])
+```
+
+```output
+:ok
+```
+
+```elixir
 inputs =
   File.read!("./2021/day_02_input.txt")
   |> String.split("\n")
@@ -130,6 +138,57 @@ Calculate the horizontal position and depth you would have after following the p
   end)
 
 _answer = horizontal_position * depth
+```
+
+```output
+2272262
+```
+
+## Solve: Part 1 - Nx
+
+https://github.com/josevalim/aoc/blob/main/2021/day-02.livemd
+
+```elixir
+defmodule Day2.Part1.Nx do
+  import Nx.Defn
+
+  defn run(tensor) do
+    {length, _} = Nx.shape(tensor)
+
+    {_, horizontal_position, depth, _} =
+      while {i = 0, horizontal_position = 0, depth = 0, tensor}, i < length do
+        direction = tensor[i][0]
+        n = tensor[i][1]
+
+        {next_horizontal_position, next_depth} =
+          cond do
+            direction == 0 -> {horizontal_position + n, depth}
+            direction == 1 -> {horizontal_position, depth + n}
+            direction == 2 -> {horizontal_position, depth - n}
+            :otherwise -> {horizontal_position, depth}
+          end
+
+        {i + 1, next_horizontal_position, next_depth, tensor}
+      end
+
+    horizontal_position * depth
+  end
+end
+
+inputs
+|> Enum.map(fn [direction, n] ->
+  direction_num =
+    case direction do
+      "forward" -> 0
+      "down" -> 1
+      "up" -> 2
+    end
+
+  [direction_num, n]
+end)
+|> Nx.tensor()
+|> Day2.Part1.Nx.run()
+|> Nx.to_scalar()
 ```
 
 ```output
