@@ -5,10 +5,30 @@
 ## Setup
 
 ```elixir
+Mix.install([{:nx, github: "elixir-nx/nx", sparse: "nx"}])
+```
+
+```output
+* Getting nx (https://github.com/elixir-nx/nx.git)
+remote: Enumerating objects: 10704, done.        
+remote: Counting objects: 100% (2759/2759), done.        
+remote: Compressing objects: 100% (571/571), done.        
+remote: Total 10704 (delta 2328), reused 2474 (delta 2178), pack-reused 7945        
+origin/HEAD set to main
+A new Hex version is available (0.21.2 < 0.21.3), please update with `mix local.hex`
+==> nx
+Compiling 23 files (.ex)
+Generated nx app
+```
+
+```output
+:ok
+```
+
+```elixir
 inputs =
   File.read!("./2021/day_01_input.txt")
-  |> String.split("\n")
-  |> Enum.reject(&(&1 == ""))
+  |> String.split("\n", trim: true)
   |> Enum.map(&String.to_integer/1)
 ```
 
@@ -87,6 +107,24 @@ inputs
 1564
 ```
 
+<!-- livebook:{"branch_parent_index":1} -->
+
+## Solve: Part1 - Nx
+
+```elixir
+inputs
+|> Nx.tensor()
+|> then(fn tensor ->
+  Nx.greater(tensor[1..-1//1], tensor[0..-2//1])
+end)
+|> Nx.sum()
+|> Nx.to_scalar()
+```
+
+```output
+1564
+```
+
 ## Part 2
 
 https://adventofcode.com/2021/day/1#part2
@@ -131,7 +169,7 @@ In this example, there are **5** sums that are larger than the previous sum.
 
 Consider sums of a three-measurement sliding window. **How many sums are larger than the previous sum?**
 
-<!-- livebook:{"branch_parent_index":3} -->
+<!-- livebook:{"branch_parent_index":4} -->
 
 ## Solve: Part 2
 
@@ -155,6 +193,23 @@ inputs
 |> Enum.chunk_every(4, 1, :discard)
 |> Enum.filter(fn [n0, _n1, _n2, n3] -> n3 > n0 end)
 |> Enum.count()
+```
+
+```output
+1611
+```
+
+## Solve: Part 2 - Nx
+
+```elixir
+inputs
+|> Nx.tensor()
+|> Nx.window_sum({3})
+|> then(fn tensor ->
+  Nx.greater(tensor[1..-1//1], tensor[0..-2//1])
+end)
+|> Nx.sum()
+|> Nx.to_scalar()
 ```
 
 ```output
