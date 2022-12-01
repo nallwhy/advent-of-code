@@ -1,0 +1,16 @@
+# Advent of Code 2021
+
+- [Day 1: Sonar Sweep](./day_01_sonar_sweep.livemd)
+- [Day 2: Dive](./day_02_dive.livemd)
+- [Day 3: Binary Diagnostic](./day_03_binary_diagnostic.livemd)
+- [Day 4: Giant Squid](./day_04_giant_squid.livemd)
+- [Day 5: Hydrothermal Venture](./day_05_hydrothermal_venture.livemd)
+- [Day 6: Lanternfish](./day_06_lanternfish.livemd)
+- [Day 7: The Treachery of Whales](./day_07_the_treachery_of_whales.livemd)
+- [Day 8: Seven Segment Search](./day_08_seven_segment_search.livemd)
+- [Day 9: Smoke Basin](./day_09_smoke_basin.livemd)
+- [Day 10: Syntax Scoring](./day_10_syntax_scoring.livemd)
+- [Day 11: Dumbo Octopus](./day_11_dumbo_octopus.livemd)
+- [Day 12: Passage Pathing](./day_12_passage_pathing.livemd)
+- [Day 13: Transparent Origami](./day_13_transparent_origami.livemd)
+- [Day 14: Extended Polymerization](./day_14_extended_polymerization.livemd)
