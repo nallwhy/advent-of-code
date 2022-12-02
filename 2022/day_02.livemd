@@ -106,7 +106,7 @@ trans_outcome = fn
   "Z" -> :won
 end
 
-calc_player_shape = fn
+get_player_shape = fn
   "A", :lost -> "Z"
   "A", :draw -> "X"
   "A", :won -> "Y"
@@ -120,7 +120,7 @@ end
 
 calc_score = fn opponent_shape, raw_outcome ->
   outcome = trans_outcome.(raw_outcome)
-  player_shape = calc_player_shape.(opponent_shape, outcome)
+  player_shape = get_player_shape.(opponent_shape, outcome)
 
   calc_shape_score.(player_shape) + calc_outcome_score.(outcome)
 end
@@ -129,4 +129,98 @@ _answer2 =
   data
   |> Enum.map(fn [opponent_shape, raw_outcome] -> calc_score.(opponent_shape, raw_outcome) end)
   |> Enum.sum()
+```
+
+## Better Solution
+
+```elixir
+# Record result set
+results = [
+  {:rock, :rock, :draw},
+  {:rock, :paper, :won},
+  {:rock, :scissors, :lost},
+  {:paper, :rock, :lost},
+  {:paper, :paper, :draw},
+  {:paper, :scissors, :won},
+  {:scissors, :rock, :won},
+  {:scissors, :paper, :lost},
+  {:scissors, :scissors, :draw}
+]
+
+decode = fn
+  input when input in ["A", "X"] -> :rock
+  input when input in ["B", "Y"] -> :paper
+  input when input in ["C", "Z"] -> :scissors
+end
+
+calc_shape_score = fn
+  :rock -> 1
+  :paper -> 2
+  :scissors -> 3
+end
+
+calc_outcome_score = fn
+  :lost -> 0
+  :draw -> 3
+  :won -> 6
+end
+
+# Part 1
+
+get_outcome = fn opponent_shape, player_shape ->
+  results
+  |> Enum.find_value(fn
+    {^opponent_shape, ^player_shape, outcome} -> outcome
+    _ -> nil
+  end)
+end
+
+calc_score = fn raw_opponent_shape, raw_player_shape ->
+  opponent_shape = decode.(raw_opponent_shape)
+  player_shape = decode.(raw_player_shape)
+
+  calc_shape_score.(player_shape) +
+    calc_outcome_score.(get_outcome.(opponent_shape, player_shape))
+end
+
+answer1 =
+  data
+  |> Enum.map(fn [raw_opponent_shape, raw_player_shape] ->
+    calc_score.(raw_opponent_shape, raw_player_shape)
+  end)
+  |> Enum.sum()
+
+# Part 2
+
+trans_outcome = fn
+  "X" -> :lost
+  "Y" -> :draw
+  "Z" -> :won
+end
+
+get_player_shape = fn opponent_shape, outcome ->
+  results
+  |> Enum.find_value(fn
+    {^opponent_shape, player_shape, ^outcome} -> player_shape
+    _ -> nil
+  end)
+end
+
+calc_score = fn raw_opponent_shape, raw_outcome ->
+  opponent_shape = decode.(raw_opponent_shape)
+  outcome = trans_outcome.(raw_outcome)
+
+  player_shape = get_player_shape.(opponent_shape, outcome)
+
+  calc_shape_score.(player_shape) + calc_outcome_score.(outcome)
+end
+
+answer2 =
+  data
+  |> Enum.map(fn [raw_opponent_shape, raw_outcome] ->
+    calc_score.(raw_opponent_shape, raw_outcome)
+  end)
+  |> Enum.sum()
+
+{answer1, answer2}
 ```
