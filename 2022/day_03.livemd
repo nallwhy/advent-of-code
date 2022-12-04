@@ -8,6 +8,8 @@ input = Kino.Input.textarea("Please paste your input:")
 
 ## Part 1
 
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fjosevalim%2Flivebooks%2Fblob%2Fmain%2Fadvent_of_code%2F2022%2Fday_03.livemd)
+
 One Elf has the important job of loading all of the rucksacks with supplies for the jungle journey. Unfortunately, that Elf didn't quite follow the packing instructions, and so a few items now need to be rearranged.
 
 Each rucksack has two large **compartments**. All items of a given type are meant to go into exactly one of the two compartments. The Elf that did the packing failed to follow this rule for exactly one item type per rucksack.
