@@ -8,6 +8,8 @@ input = Kino.Input.textarea("Please paste your input:")
 
 ## Part 1
 
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fjosevalim%2Flivebooks%2Fblob%2Fmain%2Fadvent_of_code%2F2022%2Fday_07.livemd)
+
 You can hear birds chirping and raindrops hitting leaves as the expedition proceeds. Occasionally, you can even hear much louder sounds in the distance; how big do the animals get out here, anyway?
 
 The device the Elves gave you has problems with more than just its communication system. You try to run a system update:
