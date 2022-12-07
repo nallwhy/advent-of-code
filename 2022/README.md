@@ -6,3 +6,4 @@
 - [Day 4: Camp Cleanup](./day_04.livemd)
 - [Day 5: Supply Stacks](./day_05.livemd)
 - [Day 6: Tuning Trouble](./day_06.livemd)
+- [Day 7: No Space Left On Device](./day_07.livemd)
