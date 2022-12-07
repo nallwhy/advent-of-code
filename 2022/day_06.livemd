@@ -56,7 +56,8 @@ find_marker = fn <<x::binary-size(1)>> <> rest, count, queue, fun ->
   end
 end
 
-find_marker.(data, 1, [], find_marker)
+_answer1 =
+  find_marker.(data, 1, [], find_marker)
 ```
 
 ## Part 2
@@ -87,5 +88,6 @@ find_marker = fn <<x::binary-size(1)>> <> rest, count, queue, fun ->
   end
 end
 
-find_marker.(data, 1, [], find_marker)
+_answer2 =
+  find_marker.(data, 1, [], find_marker)
 ```

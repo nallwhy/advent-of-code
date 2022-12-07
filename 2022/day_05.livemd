@@ -109,20 +109,21 @@ procedures =
     decode_procedure.(procedure_input)
   end)
 
-procedures
-|> Enum.reduce(crates, fn %{"count" => count, "from" => from, "to" => to}, crates ->
-  from = from - 1
-  to = to - 1
+_answer1 =
+  procedures
+  |> Enum.reduce(crates, fn %{"count" => count, "from" => from, "to" => to}, crates ->
+    from = from - 1
+    to = to - 1
 
-  {move, new_from_list} = Enum.at(crates, from) |> Enum.split(count)
-  new_to_list = Enum.reverse(move) ++ Enum.at(crates, to)
+    {move, new_from_list} = Enum.at(crates, from) |> Enum.split(count)
+    new_to_list = Enum.reverse(move) ++ Enum.at(crates, to)
 
-  crates
-  |> List.replace_at(from, new_from_list)
-  |> List.replace_at(to, new_to_list)
-end)
-|> Enum.map(&(&1 |> List.first()))
-|> Enum.join()
+    crates
+    |> List.replace_at(from, new_from_list)
+    |> List.replace_at(to, new_to_list)
+  end)
+  |> Enum.map(&(&1 |> List.first()))
+  |> Enum.join()
 ```
 
 ## Part 2
@@ -186,18 +187,19 @@ In this example, the CrateMover 9001 has put the crates in a totally different o
 Before the rearrangement process finishes, update your simulation so that the Elves know where they should stand to be ready to unload the final supplies. **After the rearrangement procedure completes, what crate ends up on top of each stack?**
 
 ```elixir
-procedures
-|> Enum.reduce(crates, fn %{"count" => count, "from" => from, "to" => to}, crates ->
-  from = from - 1
-  to = to - 1
+_answer2 =
+  procedures
+  |> Enum.reduce(crates, fn %{"count" => count, "from" => from, "to" => to}, crates ->
+    from = from - 1
+    to = to - 1
 
-  {move, new_from_list} = Enum.at(crates, from) |> Enum.split(count)
-  new_to_list = move ++ Enum.at(crates, to)
+    {move, new_from_list} = Enum.at(crates, from) |> Enum.split(count)
+    new_to_list = move ++ Enum.at(crates, to)
 
-  crates
-  |> List.replace_at(from, new_from_list)
-  |> List.replace_at(to, new_to_list)
-end)
-|> Enum.map(&(&1 |> List.first()))
-|> Enum.join()
+    crates
+    |> List.replace_at(from, new_from_list)
+    |> List.replace_at(to, new_to_list)
+  end)
+  |> Enum.map(&(&1 |> List.first()))
+  |> Enum.join()
 ```
