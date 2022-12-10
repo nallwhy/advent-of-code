@@ -7,3 +7,4 @@
 - [Day 5: Supply Stacks](./day_05.livemd)
 - [Day 6: Tuning Trouble](./day_06.livemd)
 - [Day 7: No Space Left On Device](./day_07.livemd)
+- [Day 8: Treetop Tree House](./day_08.livemd)
