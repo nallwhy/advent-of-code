@@ -9,3 +9,4 @@
 - [Day 7: No Space Left On Device](./day_07.livemd)
 - [Day 8: Treetop Tree House](./day_08.livemd)
 - [Day 9: Rope Bridge](./day_09.livemd)
+- [Day 10: Cathode-Ray Tube](./day_10.livemd)
