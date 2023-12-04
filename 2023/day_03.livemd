@@ -8,6 +8,8 @@ input = Kino.Input.textarea("Please paste your input:")
 
 ## Part 1
 
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2023%2Fday_03.livemd)
+
 You and the Elf eventually reach a [gondola lift](https://en.wikipedia.org/wiki/Gondola_lift) station; he says the gondola lift will take you up to the water source, but this is as far as he can bring you. You go inside.
 
 It doesn't take long to find the gondolas, but there seems to be a problem: they're not moving.
