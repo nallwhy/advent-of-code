@@ -1,12 +1,17 @@
-<!-- livebook:{"persist_outputs":true} -->
-
 # Day 4: Giant Squid
+
+```elixir
+Mix.install([:kino])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
 
 ## Setup
 
 ```elixir
 [numbers_str | boards_str] =
-  File.read!("./2021/day_04_input.txt")
+  input
+  |> Kino.Input.read()
   |> String.split("\n", trim: true)
 
 numbers = numbers_str |> String.split(",") |> Enum.map(&String.to_integer/1)
@@ -22,197 +27,9 @@ boards =
   end)
 ```
 
-```output
-[
-  ['9P[(\f', [62, 36, 72, 0, 20], [55, 60, 25, 92, 96], [14, 2, 17, 18, 86], [1, 4, 90, 66, 38]],
-  [[1, 25, 81, 16, 24], [33, 40, 86, 28, 96], [4, 97, 90, 32, 13], [50, 38, 35, 14, 56], 'I*\t$C'],
-  [[46, 25, 28, 59, 88], [33, 48, 15, 0, 95], [16, 30, 24, 2, 71], '\vQ:FA', [37, 1, 26, 94, 75]],
-  [[53, 56, 5, 72, 99], [46, 27, 23, 49, 4], [3, 93, 21, 65, 37], [35, 7, 50, 32, 24], 'QN46X'],
-  [[76, 14, 58, 84, 17], [5, 89, 97, 57, 15], [19, 77, 35, 56, 93], [31, 71, 92, 2, 39], '\n\e[C/'],
-  ['\e_J(2', '1B%PK', [54, 70, 1, 16, 41], [11, 77, 61, 6, 89], [71, 45, 73, 23, 29]],
-  [[87, 72, 85, 89, 18], [91, 56, 54, 14, 88], 'T.#\tE', [36, 66, 53, 34, 17], [71, 57, 4, 16, 7]],
-  [[35, 85, 76, 2, 59], [47, 51, 36, 29, 22], [25, 62, 86, 78, 95], '=\racA', '\\4\'\tI'],
-  ['3\'NX>', [79, 91, 58, 50, 15], [25, 82, 89, 20, 1], '\fI\a_ ', [54, 67, 98, 77, 4]],
-  [[49, 38, 14, 68, 13], '!*,:A', [15, 47, 29, 84, 82], [34, 94, 18, 99, 11], [89, 43, 23, 0, 78]],
-  ['ZB,2K', 'G9W(b', [73, 49, 13, 38, 21], [35, 6, 11, 91, 84], [26, 14, 52, 82, 56]],
-  ['Q&6I*', [16, 12, 94, 36, 60], '-b\nF.', [4, 58, 96, 53, 64], [48, 84, 30, 0, 2]],
-  [[37, 16, 48, 41, 97], 'U+N#*', [39, 18, 30, 44, 82], [93, 74, 14, 19, 56], [87, 10, 80, 77, 17]],
-  ['\e&$[-', 'G!H\tY', [26, 39, 25, 74, 88], [1, 81, 35, 86, 59], [10, 63, 14, 61, 53]],
-  [[96, 44, 76, 21, 91], [82, 31, 90, 4, 48], [25, 85, 20, 18, 75], '@Gb/1', [11, 70, 3, 8, 99]],
-  [
-    [71, 73, 69, 20, 39],
-    [63, 25, 28, 32, 1],
-    [8, 29, 41, 36, 74],
-    [24, 59, 95, 16, 76],
-    [70, 4, 68, 60, 46]
-  ],
-  [
-    [35, 73, 66, 20, 44],
-    [91, 87, 24, 72, 90],
-    [64, 81, 84, 83, 30],
-    [93, 14, 80, 49, 56],
-    '5^\n\\"'
-  ],
-  [[6, 79, 37, 43, 78], [81, 64, 27, 26, 86], [11, 80, 21, 52, 93], [30, 72, 23, 51, 40], '\faG&)'],
-  [[30, 74, 71, 69, 78], [85, 56, 23, 58, 24], [32, 87, 60, 29, 47], [67, 19, 57, 35, 14], 'T746\n'],
-  [
-    [81, 23, 12, 54, 20],
-    [27, 67, 33, 17, 15],
-    [16, 11, 40, 73, 32],
-    [72, 30, 35, 7, 71],
-    [94, 68, 3, 61, 84]
-  ],
-  ['\t\fITZ', 'c$]>/', [28, 54, 59, 17, 74], [87, 32, 15, 52, 85], [31, 11, 82, 1, 43]],
-  [
-    [7, 92, 57, 6, 71],
-    [28, 90, 78, 66, 48],
-    [25, 35, 72, 58, 65],
-    [64, 68, 49, 83, 2],
-    [36, 0, 52, 88, 3]
-  ],
-  [[31, 21, 25, 76, 55], [32, 53, 92, 38, 6], '$+@\n_', '`OZ\b6', [40, 18, 30, 72, 71]],
-  [[61, 1, 52, 70, 60], '/E9J#', [3, 34, 85, 66, 14], [92, 33, 7, 31, 20], [29, 54, 23, 38, 2]],
-  ['\'1W+\v', [74, 16, 42, 69, 29], [17, 60, 0, 38, 66], [93, 31, 50, 28, 40], 'KL\fOX'],
-  [[93, 44, 15, 97, 1], [47, 14, 75, 0, 28], '\e1-;[', '\a*HVJ', [57, 3, 16, 36, 79]],
-  [
-    [11, 78, 4, 0, 21],
-    [71, 9, 18, 88, 80],
-    [57, 16, 1, 7, 75],
-    [25, 50, 70, 3, 22],
-    [23, 68, 89, 19, 65]
-  ],
-  [
-    [99, 17, 60, 70, 66],
-    [88, 24, 30, 8, 62],
-    [49, 59, 4, 29, 7],
-    [14, 81, 65, 26, 36],
-    [46, 15, 80, 95, 6]
-  ],
-  [[70, 79, 91, 85, 26], 'Y?VIR', [41, 29, 6, 27, 66], [59, 39, 37, 17, 51], [98, 11, 7, 5, 15]],
-  ['/\r$\eS', '7@\bWL', [4, 2, 75, 71, 28], 'O\fU^6', [45, 17, 14, 30, 62]],
-  [[21, 20, 46, 80, 25], 'G!$6Q', 'L"?(#', [16, 24, 8, 89, 82], [1, 87, 64, 84, 14]],
-  [[43, 3, 63, 50, 25], [65, 14, 4, 92, 60], [26, 45, 49, 51, 96], 'J\v(.\a', 'ZCM8D'],
-  [
-    [4, 24, 92, 95, 44],
-    [68, 78, 42, 6, 52],
-    [17, 23, 89, 56, 38],
-    [35, 30, 55, 22, 53],
-    [73, 64, 61, 34, 19]
-  ],
-  [
-    [77, 50, 94, 27, 31],
-    [16, 39, 12, 14, 95],
-    [24, 48, 26, 71, 67],
-    [85, 3, 43, 66, 82],
-    [92, 56, 8, 44, 0]
-  ],
-  [[37, 46, 31, 67, 9], [30, 89, 90, 0, 75], 'c-I]4', [24, 64, 70, 56, 98], [53, 48, 10, 51, 14]],
-  [[84, 28, 33, 23, 27], [53, 13, 87, 1, 24], [86, 16, 10, 90, 62], [88, 12, 99, 43, 22], '(aNM\t'],
-  ['a+=5Z', [89, 19, 7, 60, 66], [5, 58, 18, 16, 10], [14, 13, 47, 39, 20], [67, 72, 51, 85, 25]],
-  [[54, 2, 70, 69, 91], [14, 23, 49, 59, 7], '@X!A8', [31, 12, 36, 73, 46], 'RWBG_'],
-  [[78, 37, 84, 17, 34], [64, 6, 68, 74, 46], [28, 39, 24, 20, 55], '\f=a<b', [56, 22, 7, 8, 26]],
-  ['a.C3\\', 'OR?EP', [83, 84, 26, 10, 65], [90, 35, 49, 95, 14], [89, 36, 17, 39, 45]],
-  [
-    [56, 85, 31, 43, 97],
-    [48, 84, 83, 12, 28],
-    [39, 42, 14, 64, 82],
-    [98, 17, 72, 29, 91],
-    [32, 6, 75, 15, ...]
-  ],
-  [
-    [35, 75, 70, 16, 55],
-    [60, 47, 96, 51, 21],
-    [65, 52, 54, 6, 3],
-    [24, 12, 72, 64, ...],
-    [8, 17, 34, ...]
-  ],
-  [
-    [62, 34, 27, 90, 22],
-    [53, 79, 40, 19, 78],
-    [52, 77, 23, 60, ...],
-    [68, 47, 59, ...],
-    [1, 26, ...]
-  ],
-  [[64, 74, 89, 6, 97], 'c^$H ', [59, 13, 42, ...], 'B%)7S', '#K6_9'],
-  [[61, 52, 9, 18, ...], ')5Z^W', [80, 20, ...], [8, ...], [...]],
-  [[4, 90, 30, ...], [38, 35, ...], '%AXS8', [...], ...],
-  ['cY\rG\'', '`NCR;', [...], ...],
-  [[76, ...], [...], ...],
-  [[...], ...],
-  [...],
-  ...
-]
-```
-
 ## Part 1
 
 https://adventofcode.com/2021/day/4
-
-You're already almost 1.5km (almost a mile) below the surface of the ocean, already so deep that you can't see any sunlight. What you **can** see, however, is a giant squid that has attached itself to the outside of your submarine.
-
-Maybe it wants to play [bingo](https://en.wikipedia.org/wiki/Bingo_(American_version))?
-
-Bingo is played on a set of boards each consisting of a 5x5 grid of numbers. Numbers are chosen at random, and the chosen number is **marked** on all boards on which it appears. (Numbers may not appear on all boards.) If all numbers in any row or any column of a board are marked, that board **wins**. (Diagonals don't count.)
-
-The submarine has a **bingo subsystem** to help passengers (currently, you and the giant squid) pass the time. It automatically generates a random order in which to draw numbers and a random set of boards (your puzzle input). For example:
-
-```
-7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
-
-22 13 17 11  0
- 8  2 23  4 24
-21  9 14 16  7
- 6 10  3 18  5
- 1 12 20 15 19
-
- 3 15  0  2 22
- 9 18 13 17  5
-19  8  7 25 23
-20 11 10 24  4
-14 21 16 12  6
-
-14 21 17 24  4
-10 16 15  9 19
-18  8 23 26 20
-22 11 13  6  5
- 2  0 12  3  7
-```
-
-After the first five numbers are drawn (`7`, `4`, `9`, `5`, and `11`), there are no winners, but the boards are marked as follows (shown here adjacent to each other to save space):
-
-```
-22 13 17 11  0         3 15  0  2 22        14 21 17 24  4
- 8  2 23  4 24         9 18 13 17  5        10 16 15  9 19
-21  9 14 16  7        19  8  7 25 23        18  8 23 26 20
- 6 10  3 18  5        20 11 10 24  4        22 11 13  6  5
- 1 12 20 15 19        14 21 16 12  6         2  0 12  3  7
-```
-
-After the next six numbers are drawn (`17`, `23`, `2`, `0`, `14`, and `21`), there are still no winners:
-
-```
-22 13 17 11  0         3 15  0  2 22        14 21 17 24  4
- 8  2 23  4 24         9 18 13 17  5        10 16 15  9 19
-21  9 14 16  7        19  8  7 25 23        18  8 23 26 20
- 6 10  3 18  5        20 11 10 24  4        22 11 13  6  5
- 1 12 20 15 19        14 21 16 12  6         2  0 12  3  7
-```
-
-Finally, `24` is drawn:
-
-```
-22 13 17 11  0         3 15  0  2 22        14 21 17 24  4
- 8  2 23  4 24         9 18 13 17  5        10 16 15  9 19
-21  9 14 16  7        19  8  7 25 23        18  8 23 26 20
- 6 10  3 18  5        20 11 10 24  4        22 11 13  6  5
- 1 12 20 15 19        14 21 16 12  6         2  0 12  3  7
-```
-
-At this point, the third board **wins** because it has at least one complete row or column of marked numbers (in this case, the entire top row is marked: **`14 21 17 24 4`**).
-
-The **score** of the winning board can now be calculated. Start by finding the **sum of all unmarked numbers** on that board; in this case, the sum is `188`. Then, multiply that sum by **the number that was just called** when the board won, `24`, to get the final score, `188 * 24 = 4512`.
-
-To guarantee victory against the giant squid, figure out which board will win first. **What will your final score be if you choose that board?**
 
 ## Solve: Part 1
 
@@ -257,35 +74,27 @@ alias Day4.Part1.Bingo
 
 {_, bingo_number, bingo_board} =
   numbers
-  |> Enum.reduce_while({boards, _bingo_number = nil, _bingo_board = nil}, fn number,
-                                                                             {boards, nil, nil} ->
-    new_boards = boards |> Enum.map(&Bingo.mark_number(&1, number))
+  |> Enum.reduce_while(
+    {boards, _bingo_number = nil, _bingo_board = nil},
+    fn number, {boards, nil, nil} ->
+      new_boards = boards |> Enum.map(&Bingo.mark_number(&1, number))
 
-    case new_boards |> Enum.find(&(&1 |> Bingo.has_bingo?())) do
-      nil ->
-        {:cont, {new_boards, nil, nil}}
+      case new_boards |> Enum.find(&(&1 |> Bingo.has_bingo?())) do
+        nil ->
+          {:cont, {new_boards, nil, nil}}
 
-      bingo_board ->
-        {:halt, {new_boards, number, bingo_board}}
+        bingo_board ->
+          {:halt, {new_boards, number, bingo_board}}
+      end
     end
-  end)
+  )
 
 _answer = Bingo.calc_score(bingo_board, bingo_number)
 ```
 
-```output
-55770
-```
-
 ## Part 2
 
-On the other hand, it might be wise to try a different strategy: let the giant squid win.
-
-You aren't sure how many bingo boards a giant squid could play at once, so rather than waste time counting its arms, the safe thing to do is to **figure out which board will win last** and choose that one. That way, no matter which boards it picks, it will win for sure.
-
-In the above example, the second board is the last to win, which happens after `13` is eventually called and its middle column is completely marked. If you were to keep playing until this point, the second board would have a sum of unmarked numbers equal to `148` for a final score of `148 * 13 = 1924`.
-
-Figure out which board will win last. **Once it wins, what would its final score be?**
+https://adventofcode.com/2021/day/4#part2
 
 ## Solve: Part 2
 
@@ -306,8 +115,4 @@ Figure out which board will win last. **Once it wins, what would its final score
   end)
 
 _answer = Bingo.calc_score(bingo_board, bingo_number)
-```
-
-```output
-2980
 ```
