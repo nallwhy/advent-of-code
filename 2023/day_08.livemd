@@ -1,0 +1,110 @@
+# Day 8: Haunted Wasteland
+
+```elixir
+Mix.install([:kino, :nimble_parsec])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
+
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2023%2Fday_08.livemd)
+
+https://adventofcode.com/2023/day/8
+
+```elixir
+[instructions_str | nodes_str] =
+  input
+  |> Kino.Input.read()
+  |> String.split("\n", trim: true)
+
+defmodule Day08.Part1 do
+  import NimbleParsec
+
+  defparsec(
+    :node,
+    ascii_string([], 3)
+    |> ignore(string(" = "))
+    |> ignore(string("("))
+    |> ascii_string([], 3)
+    |> ignore(string(", "))
+    |> ascii_string([], 3)
+    |> ignore(string(")"))
+  )
+end
+
+instructions = instructions_str |> String.codepoints()
+
+node_map =
+  nodes_str
+  # with binary matching
+  # |> Enum.map(fn <<node::binary-size(3)>> <>
+  #                  " = (" <> <<left::binary-size(3)>> <> ", " <> <<right::binary-size(3)>> <> ")" ->
+  #   {node, {left, right}}
+  # end)
+  # with NimbleParsec
+  |> Enum.map(fn node_str ->
+    {:ok, [node, left, right], _, _, _, _} = node_str |> Day08.Part1.node()
+
+    {node, {left, right}}
+  end)
+  |> Map.new()
+```
+
+```elixir
+Stream.cycle(instructions)
+|> Enum.reduce_while({"AAA", 0}, fn
+  _, {"ZZZ", step_count} ->
+    {:halt, step_count}
+
+  instruction, {current_node, step_count} ->
+    instruction_tuple_index =
+      case instruction do
+        "L" -> 0
+        "R" -> 1
+      end
+
+    {:cont, {node_map[current_node] |> elem(instruction_tuple_index), step_count + 1}}
+end)
+```
+
+## Part 2
+
+https://adventofcode.com/2023/day/8#part2
+
+```elixir
+gcd = fn
+  a, 0, _gcd -> a
+  a, b, gcd -> gcd.(b, rem(a, b), gcd)
+end
+
+start_nodes =
+  node_map
+  |> Map.keys()
+  |> Enum.filter(fn node -> node |> String.at(-1) == "A" end)
+
+start_nodes
+|> Enum.map(fn start_node ->
+  Stream.cycle(instructions)
+  |> Enum.reduce_while({start_node, 0}, fn
+    _, {<<_::binary-size(2)>> <> "Z", step_count} ->
+      {:halt, step_count}
+
+    instruction, {current_node, step_count} ->
+      instruction_tuple_index =
+        case instruction do
+          "L" -> 0
+          "R" -> 1
+        end
+
+      {:cont, {node_map[current_node] |> elem(instruction_tuple_index), step_count + 1}}
+  end)
+end)
+|> Enum.reduce(fn x, acc ->
+  # calc LCM
+  a = max(x, acc)
+  b = min(x, acc)
+
+  div(a * b, gcd.(a, b, gcd))
+end)
+```

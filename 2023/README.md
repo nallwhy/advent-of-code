@@ -7,3 +7,4 @@
 - [Day 5: If You Give A Seed A Fertilizer](./day_05.livemd)
 - [Day 6: Wait For It](./day_06.livemd)
 - [Day 7: Camel Cards](./day_07.livemd)
+- [Day 8: Haunted Wasteland](./day_08.livemd)
