@@ -1,0 +1,83 @@
+# Day 9: Mirage Maintenance
+
+```elixir
+Mix.install([:kino])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
+
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2023%2Fday_08.livemd)
+
+https://adventofcode.com/2023/day/9
+
+```elixir
+data =
+  input
+  |> Kino.Input.read()
+  |> String.split("\n", trim: true)
+
+histories =
+  data
+  |> Enum.map(fn history_str ->
+    history_str
+    |> String.split(" ")
+    |> Enum.map(&String.to_integer/1)
+  end)
+```
+
+```elixir
+calc_next_value = fn [last_step | _] = steps, calc_next_value ->
+  new_step = last_step |> Enum.chunk_every(2, 1, :discard) |> Enum.map(fn [a, b] -> b - a end)
+
+  case Enum.all?(new_step, &(&1 == 0)) do
+    true ->
+      steps
+      |> Enum.map(fn step -> step |> List.last() end)
+      |> Enum.sum()
+
+    false ->
+      calc_next_value.([new_step | steps], calc_next_value)
+  end
+end
+
+histories
+|> Enum.map(fn history ->
+  calc_next_value.([history], calc_next_value)
+end)
+|> Enum.sum()
+```
+
+## Part 2
+
+```elixir
+require Integer
+
+calc_prev_value = fn [last_step | _] = steps, calc_prev_value ->
+  new_step = last_step |> Enum.chunk_every(2, 1, :discard) |> Enum.map(fn [a, b] -> b - a end)
+
+  case Enum.all?(new_step, &(&1 == 0)) do
+    true ->
+      steps
+      |> Enum.reverse()
+      |> Enum.map(fn step -> step |> List.first() end)
+      |> Enum.with_index()
+      |> Enum.map(fn {first, i} ->
+        sign = if Integer.is_even(i), do: 1, else: -1
+
+        first * sign
+      end)
+      |> Enum.sum()
+
+    false ->
+      calc_prev_value.([new_step | steps], calc_prev_value)
+  end
+end
+
+histories
+|> Enum.map(fn history ->
+  calc_prev_value.([history], calc_prev_value)
+end)
+|> Enum.sum()
+```
