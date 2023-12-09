@@ -6,7 +6,11 @@ Mix.install([:kino])
 input = Kino.Input.textarea("Please paste your input:")
 ```
 
-## Root
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2023%2Fday_01.livemd)
+
+https://adventofcode.com/2023/day/1
 
 ```elixir
 data =
@@ -15,77 +19,134 @@ data =
   |> String.split("\n", trim: true)
 ```
 
-<!-- livebook:{"branch_parent_index":0} -->
-
-## Part 1
-
-[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2023%2Fday_01.livemd)
-
-https://adventofcode.com/2023/day/1
-
 ```elixir
 data
 |> Enum.map(fn calibration ->
-  Regex.replace(~r/[^\d]/, calibration, "")
-  |> String.codepoints()
-  |> then(&[List.first(&1), List.last(&1)])
-  |> Enum.join()
+  only_number_string = Regex.replace(~r/[^\d]/, calibration, "")
+
+  "#{only_number_string |> String.at(0)}#{only_number_string |> String.at(-1)}"
   |> String.to_integer()
 end)
 |> Enum.sum()
 ```
-
-<!-- livebook:{"branch_parent_index":0} -->
 
 ## Part 2
 
 https://adventofcode.com/2023/day/1#part2
 
 ```elixir
-defmodule Day01.Part2 do
-  def run(data) do
-    data
-    |> Enum.map(fn calibration ->
-      do_run(calibration, [])
-      |> Enum.reverse()
-      |> then(&([List.first(&1), List.last(&1)] |> Enum.join() |> String.to_integer()))
-    end)
-    |> Enum.sum()
+defmodule Day01.Part2.Solve1 do
+  @number_words ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+  @number_strings 1..9 |> Enum.map(&Integer.to_string/1)
+  @number_matches (@number_words |> Enum.with_index(1)) ++ (@number_strings |> Enum.with_index(1))
+
+  def recover(calibration) do
+    do_recover(calibration, [])
+    |> Enum.reverse()
+    |> then(&("#{List.first(&1)}#{List.last(&1)}" |> String.to_integer()))
   end
 
-  defp do_run("", result) do
+  defp do_recover("", result) do
     result
   end
 
-  [
-    {"one", 1},
-    {"two", 2},
-    {"three", 3},
-    {"four", 4},
-    {"five", 5},
-    {"six", 6},
-    {"seven", 7},
-    {"eight", 8},
-    {"nine", 9}
-  ]
-  |> Enum.map(fn {number_string, number} ->
-    defp do_run(unquote(number_string) <> _rest = string, result) do
-      do_run(remove_first_letter(string), [unquote(number) | result])
-    end
+  defp do_recover(string, result) do
+    new_result =
+      @number_matches
+      |> Enum.find_value(fn {number_match, number} ->
+        if string |> String.starts_with?(number_match) do
+          number
+        end
+      end)
+      |> case do
+        nil -> result
+        number -> [number | result]
+      end
 
-    defp do_run(unquote(number |> Integer.to_string()) <> _rest = string, result) do
-      do_run(remove_first_letter(string), [unquote(number) | result])
-    end
-  end)
-
-  defp do_run(not_matched_string, result) do
-    do_run(remove_first_letter(not_matched_string), result)
-  end
-
-  defp remove_first_letter(<<_::utf8>> <> rest) do
-    rest
+    do_recover(string |> String.slice(1..-1), new_result)
   end
 end
 
-Day01.Part2.run(data)
+data
+|> Enum.map(fn calibration ->
+  Day01.Part2.Solve1.recover(calibration)
+end)
+|> Enum.sum()
+```
+
+```elixir
+defmodule Day01.Part2.Solve2 do
+  @number_words ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+  @number_strings 1..9 |> Enum.map(&Integer.to_string/1)
+  @number_matches (@number_words |> Enum.with_index(1)) ++ (@number_strings |> Enum.with_index(1))
+
+  def recover(calibration) do
+    do_recover(calibration, [])
+    |> then(&("#{List.first(&1)}#{List.last(&1)}" |> String.to_integer()))
+  end
+
+  defp do_recover("", result) do
+    result
+  end
+
+  defp do_recover(string, result) do
+    new_result =
+      @number_matches
+      |> Enum.find_value(fn {number_match, number} ->
+        if string |> String.starts_with?(number_match) do
+          number
+        end
+      end)
+      |> case do
+        nil -> result
+        number -> (result |> Enum.slice(0..0)) ++ [number]
+      end
+
+    do_recover(string |> String.slice(1..-1), new_result)
+  end
+end
+
+data
+|> Enum.map(fn calibration ->
+  Day01.Part2.Solve2.recover(calibration)
+end)
+|> Enum.sum()
+```
+
+```elixir
+defmodule Day01.Part2.Solve3 do
+  @number_words ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+  @number_strings 1..9 |> Enum.map(&Integer.to_string/1)
+  @number_matches (@number_words |> Enum.with_index(1)) ++ (@number_strings |> Enum.with_index(1))
+
+  def recover(calibration) do
+    [
+      {&String.starts_with?/2, 1..-1},
+      {&String.ends_with?/2, 0..-2}
+    ]
+    |> Enum.map(fn {match_fun, range} ->
+      do_recover(calibration, match_fun, range)
+    end)
+    |> then(fn [first, last] -> "#{first}#{last}" |> String.to_integer() end)
+  end
+
+  defp do_recover(string, match_fun, range) do
+    @number_matches
+    |> Enum.find_value(fn {number_match, number} ->
+      if string |> match_fun.(number_match) do
+        number
+      end
+    end)
+    |> case do
+      nil -> do_recover(string |> String.slice(range), match_fun, range)
+      number -> number
+    end
+  end
+end
+
+data
+|> Enum.map(fn calibration ->
+  Day01.Part2.Solve3.recover(calibration)
+end)
+|> Enum.sum()
 ```
