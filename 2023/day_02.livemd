@@ -13,51 +13,110 @@ input = Kino.Input.textarea("Please paste your input:")
 https://adventofcode.com/2023/day/2
 
 ```elixir
-data =
+game_strs =
   input
   |> Kino.Input.read()
   |> String.split("\n", trim: true)
 ```
 
 ```elixir
-cubes = %{
-  red: 12,
-  green: 13,
-  blue: 14
-}
+defmodule Day02.Parser do
+  def parse(game_strs) do
+    game_strs
+    |> Enum.map(&parse_game/1)
+  end
 
-game_data =
-  data
-  |> Enum.map(fn game_str ->
+  def parse_game(game_str) do
     ["Game " <> game_id_str, sets_str] = game_str |> String.split(":")
-
     game_id = game_id_str |> String.to_integer()
 
-    sets =
-      sets_str
-      |> String.split(";")
-      |> Enum.map(fn set_str ->
-        set_str
-        |> String.split(",")
-        |> Enum.map(fn subset_str ->
-          {number, color_str} = subset_str |> String.trim() |> Integer.parse()
-          {number, color_str |> String.trim() |> String.to_existing_atom()}
-        end)
-      end)
+    sets = sets_str |> parse_sets()
 
     {game_id, sets}
-  end)
+  end
 
-game_data
-|> Enum.filter(fn {_game_id, sets} ->
-  sets
-  |> Enum.all?(fn set ->
+  def parse_sets(sets_str) do
+    sets_str
+    |> String.split(";")
+    |> Enum.map(&parse_set/1)
+  end
+
+  def parse_set(set_str) do
+    set_str
+    |> String.split(",")
+    |> Enum.map(&parse_subset/1)
+  end
+
+  def parse_subset(subset_str) do
+    {number, color_str} = subset_str |> String.trim() |> Integer.parse()
+    color = color_str |> String.trim() |> String.to_existing_atom()
+
+    {color, number}
+  end
+end
+
+ExUnit.start(auto_run: false)
+
+defmodule Dau02.ParserTest do
+  use ExUnit.Case, async: true
+  alias Day02.Parser
+
+  test "parse_sets/1" do
+    assert Parser.parse_sets("3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green") ==
+             [
+               [{:blue, 3}, {:red, 4}],
+               [{:red, 1}, {:green, 2}, {:blue, 6}],
+               [{:green, 2}]
+             ]
+  end
+
+  test "parse_set/1" do
+    assert Parser.parse_set("1 red, 2 green, 6 blue") == [{:red, 1}, {:green, 2}, {:blue, 6}]
+  end
+
+  test "parse_subset/1" do
+    assert Parser.parse_subset("1 red") == {:red, 1}
+  end
+end
+
+ExUnit.run()
+
+alias Day02.Parser
+
+games = game_strs |> Parser.parse()
+```
+
+```elixir
+defmodule Day02.Part1 do
+  @cubes %{
+    red: 12,
+    green: 13,
+    blue: 14
+  }
+
+  def solve(games) do
+    games
+    |> Enum.filter(&possible_game?/1)
+    |> Enum.map(fn {game_id, _sets} -> game_id end)
+    |> Enum.sum()
+  end
+
+  defp possible_game?({_game_id, sets}) do
+    sets
+    |> Enum.all?(&possible_set?/1)
+  end
+
+  defp possible_set?(set) do
     set
-    |> Enum.all?(fn {number, color} -> number <= cubes[color] end)
-  end)
-end)
-|> Enum.map(fn {game_id, _sets} -> game_id end)
-|> Enum.sum()
+    |> Enum.all?(&possible_subset?/1)
+  end
+
+  defp possible_subset?({color, number}) do
+    number <= @cubes[color]
+  end
+end
+
+Day02.Part1.solve(games)
 ```
 
 ## Part 2
@@ -65,19 +124,28 @@ end)
 https://adventofcode.com/2023/day/2#part2
 
 ```elixir
-game_data
-|> Enum.map(fn {_game_id, sets} ->
-  sets
-  |> Enum.reduce(%{red: 0, green: 0, blue: 0}, fn set, acc ->
-    set
-    |> Enum.reduce(acc, fn {number, color}, acc ->
-      case acc[color] < number do
-        true -> acc |> Map.put(color, number)
-        false -> acc
-      end
+defmodule Day02.Part2 do
+  def solve(games) do
+    games
+    |> Enum.map(&calc_mins/1)
+    |> Enum.map(fn mins -> mins |> Map.values() |> Enum.product() end)
+    |> Enum.sum()
+  end
+
+  defp calc_mins({_game_id, sets}) do
+    sets
+    # |> Enum.reduce(%{}, fn set, mins ->
+    #   set
+    #   |> Enum.reduce(mins, fn {color, number}, mins ->
+    #     mins |> Map.update(color, number, & max(&1, number))
+    #   end)
+    # end)
+    |> List.flatten()
+    |> Enum.reduce(%{}, fn {color, number}, mins ->
+      mins |> Map.update(color, number, &max(&1, number))
     end)
-  end)
-end)
-|> Enum.map(fn mins -> mins |> Map.values() |> Enum.product() end)
-|> Enum.sum()
+  end
+end
+
+Day02.Part2.solve(games)
 ```
