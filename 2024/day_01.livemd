@@ -1,0 +1,58 @@
+# Day 1: Historian Hysteria
+
+```elixir
+Mix.install([:kino])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
+
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2024%2Fday_01.livemd)
+
+https://adventofcode.com/2024/day/1
+
+```elixir
+data =
+  input
+  |> Kino.Input.read()
+  |> String.split("\n", trim: true)
+```
+
+```elixir
+pairs =
+  data
+  |> Enum.map(fn line -> String.split(line) |> Enum.map(&String.to_integer/1) end)
+
+[sorted_lefts, sorted_rights] =
+  pairs
+  |> Enum.zip_with(& &1)
+
+_answer =
+  [sorted_lefts, sorted_rights]
+  |> Enum.zip_with(fn [left, right] -> abs(left - right) end)
+  |> Enum.sum()
+```
+
+## Part 2
+
+https://adventofcode.com/2024/day/1#part2
+
+```elixir
+left_frequencies =
+  sorted_lefts
+  |> Enum.frequencies()
+
+right_frequencies =
+  sorted_rights
+  |> Enum.frequencies()
+
+_answer =
+  left_frequencies
+  |> Enum.map(fn {number, left_frequency} ->
+    right_frequency = right_frequencies |> Map.get(number, 0)
+
+    number * left_frequency * right_frequency
+  end)
+  |> Enum.sum()
+```
