@@ -1,0 +1,75 @@
+# Day 2: Red-Nosed Reports
+
+```elixir
+Mix.install([:kino])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
+
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2024%2Fday_02.livemd)
+
+https://adventofcode.com/2024/day/2
+
+```elixir
+data =
+  input
+  |> Kino.Input.read()
+  |> String.split("\n", trim: true)
+```
+
+```elixir
+reports =
+  data
+  |> Enum.map(fn line -> String.split(line) |> Enum.map(&String.to_integer/1) end)
+
+check_fun = fn report ->
+  report
+  |> Enum.chunk_every(2, 1, :discard)
+  |> Enum.reduce_while(_diff = 0, fn [num0, num1], prev_diff ->
+    diff = num0 - num1
+
+    with true <- abs(diff) >= 1,
+         true <- abs(diff) <= 3,
+         true <- diff * prev_diff >= 0 do
+      {:cont, diff}
+    else
+      _ -> {:halt, false}
+    end
+  end)
+  |> case do
+    false -> false
+    _ -> true
+  end
+end
+
+reports
+|> Enum.map(check_fun)
+|> Enum.count(&(&1 == true))
+```
+
+## Part 2
+
+https://adventofcode.com/2024/day/2#part2
+
+```elixir
+remove_each_el_fun = fn
+  {_, []}, acc, _recur ->
+    acc
+
+  {f, [bt | br]}, acc, recur ->
+    new_acc = [f ++ br | acc]
+    recur.({f ++ [bt], br}, new_acc, recur)
+end
+
+reports
+|> Enum.map(fn report ->
+  candidates = [report | remove_each_el_fun.({[], report}, [], remove_each_el_fun)]
+
+  candidates
+  |> Stream.map(check_fun)
+  |> Enum.any?()
+end)
+|> Enum.count(&(&1 == true))
+```
