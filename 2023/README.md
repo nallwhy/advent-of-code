@@ -9,3 +9,5 @@
 - [Day 7: Camel Cards](./day_07.livemd)
 - [Day 8: Haunted Wasteland](./day_08.livemd)
 - [Day 9: Mirage Maintenance](./day_09.livemd)
+- [Day 10: Pipe Maze](./day_10.livemd)
+- [Day 11: Cosmic Expansion](./day_11.livemd)

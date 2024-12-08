@@ -1,0 +1,159 @@
+# Day 10: Pipe Maze
+
+```elixir
+Mix.install([:kino])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
+
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2023%2Fday_10.livemd)
+
+https://adventofcode.com/2023/day/10
+
+```elixir
+pipes_strs =
+  Kino.Input.read(input)
+  |> String.split("\n", trim: true)
+```
+
+```elixir
+defmodule Day10.Part1 do
+  alias __MODULE__.{Pipe, Position}
+
+  def solve(pipes) do
+    {_, start_pipe} =
+      pipes
+      |> Enum.find(fn {_position, pipe} -> pipe.shape == "S" end)
+
+    second_pipe =
+      [{1, 0}, {-1, 0}, {0, 1}, {0, -1}]
+      |> Enum.map(&Position.new/1)
+      |> Enum.find_value(fn diff ->
+        next_pipe = start_pipe |> Pipe.move(diff, pipes)
+
+        case Pipe.connected?(next_pipe, start_pipe, pipes) do
+          true -> next_pipe
+          false -> nil
+        end
+      end)
+
+    distances =
+      Stream.unfold({start_pipe, second_pipe, 1}, fn
+        {_, ^start_pipe, _} ->
+          nil
+
+        {prev, current, distance} ->
+          new_distance = distance + 1
+          {new_distance, {current, Pipe.next_pipe(current, prev, pipes), new_distance}}
+      end)
+      |> Enum.to_list()
+
+    div(distances |> List.last(), 2)
+  end
+
+  defmodule Position do
+    defstruct [:x, :y]
+
+    def new({x, y}) do
+      %__MODULE__{x: x, y: y}
+    end
+
+    def move(%__MODULE__{x: x, y: y}, %__MODULE__{x: diff_x, y: diff_y}) do
+      %__MODULE__{x: x + diff_x, y: y + diff_y}
+    end
+  end
+
+  defmodule Pipe do
+    alias Day10.Part1.Position
+
+    defstruct [:position, :shape]
+
+    def new({x, y}, shape) do
+      %__MODULE__{position: Position.new({x, y}), shape: shape}
+    end
+
+    def move(%__MODULE__{} = pipe, diff, pipes) do
+      new_position = Position.move(pipe.position, diff)
+
+      pipes[new_position]
+    end
+
+    def connected?(%__MODULE__{} = from, %__MODULE__{} = to, pipes) do
+      from
+      |> diffs()
+      |> Enum.any?(fn diff ->
+        from |> move(diff, pipes) == to
+      end)
+    end
+
+    def next_pipe(%__MODULE__{} = current, %__MODULE__{} = prev, pipes) do
+      current
+      |> diffs()
+      |> Enum.find_value(fn diff ->
+        case current |> move(diff, pipes) do
+          ^prev -> nil
+          next -> next
+        end
+      end)
+    end
+
+    defp diffs(%__MODULE__{shape: shape}) do
+      case shape do
+        "|" -> [Position.new({0, -1}), Position.new({0, 1})]
+        "-" -> [Position.new({-1, 0}), Position.new({1, 0})]
+        "L" -> [Position.new({0, -1}), Position.new({1, 0})]
+        "J" -> [Position.new({0, -1}), Position.new({-1, 0})]
+        "7" -> [Position.new({-1, 0}), Position.new({0, 1})]
+        "F" -> [Position.new({1, 0}), Position.new({0, 1})]
+        "." -> []
+      end
+    end
+  end
+end
+```
+
+```elixir
+alias Day10.Part1.{Pipe, Position}
+
+pipes =
+  pipes_strs
+  |> Enum.with_index()
+  |> Enum.map(fn {pipes_str, y} ->
+    pipes_str
+    |> String.codepoints()
+    |> Enum.with_index()
+    |> Enum.map(fn {pipe_str, x} ->
+      {Position.new({x, y}), Pipe.new({x, y}, pipe_str)}
+    end)
+  end)
+  |> List.flatten()
+  |> Map.new()
+```
+
+```elixir
+Day10.Part1.solve(pipes)
+```
+
+## Part 2
+
+https://adventofcode.com/2023/day/10#part2
+
+```elixir
+pipes[{2, 1}]
+
+# calc_point = fn {current_x, current_y}, {diff_x, diff_y} ->
+#   {current_x + diff_x, current_y, diff_y}
+# end
+
+# start_pipe =
+#   [{1, 0}, {-1, 0}, {0, 1}, {0, -1}]
+#   |> Enum.find(fn diff ->
+#     pipes[calc_point.(start_point, diff)]
+#   end)
+
+# # Stream.unfold({start_point, 0}, fn
+# #   ^start_point -> {start_point, 1}
+# # end)
+```

@@ -8,7 +8,7 @@ input = Kino.Input.textarea("Please paste your input:")
 
 ## Part 1
 
-[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2023%2Fday_08.livemd)
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2023%2Fday_09.livemd)
 
 https://adventofcode.com/2023/day/9
 
