@@ -1,0 +1,126 @@
+# Day 4: Ceres Search
+
+```elixir
+Mix.install([:kino])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
+
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2024%2Fday_04.livemd)
+
+https://adventofcode.com/2024/day/4
+
+```elixir
+data =
+  input
+  |> Kino.Input.read()
+  |> String.split("\n", trim: true)
+```
+
+```elixir
+pos_char_map =
+  data
+  |> Enum.with_index()
+  |> Enum.flat_map(fn {line, y} ->
+    line
+    |> String.codepoints()
+    |> Enum.with_index()
+    |> Enum.map(fn {char, x} ->
+      {{x, y}, char}
+    end)
+  end)
+  |> Map.new()
+
+directions = for x <- -1..1, y <- -1..1, {x, y} != {0, 0}, do: {x, y}
+
+move_pos_fun = fn {pos_x, pos_y}, {direction_x, direction_y} ->
+  {pos_x + direction_x, pos_y + direction_y}
+end
+
+next_char_fun = fn
+  "X" -> "M"
+  "M" -> "A"
+  "A" -> "S"
+  _ -> nil
+end
+
+do_count_xmas_fun = fn
+  {_pos, "S"}, "S", _direction, _recur_fun ->
+    1
+
+  {pos, char}, char, direction, recur_fun ->
+    next_pos = move_pos_fun.(pos, direction)
+    next_char = pos_char_map[next_pos]
+
+    recur_fun.({next_pos, next_char}, next_char_fun.(char), direction, recur_fun)
+
+  _, _, _, _ ->
+    0
+end
+
+count_xmas_fun = fn
+  pos ->
+    case pos_char_map[pos] do
+      "X" ->
+        directions
+        |> Enum.map(fn direction ->
+          do_count_xmas_fun.({pos, "X"}, "X", direction, do_count_xmas_fun)
+        end)
+        |> Enum.sum()
+
+      _ ->
+        0
+    end
+end
+
+pos_char_map
+|> Enum.reduce(0, fn {pos, _}, acc ->
+  acc + count_xmas_fun.(pos)
+end)
+```
+
+## Part 2
+
+https://adventofcode.com/2024/day/4#part2
+
+```elixir
+direction_chars_list =
+  for x <- [1, -1], y <- [1, -1] do
+    [
+      {{x, y}, "M"},
+      {{-x, -y}, "S"}
+    ]
+  end
+
+check_x_mas_fun = fn pos, direction_chars ->
+  direction_chars
+  |> Enum.all?(fn {direction, char} ->
+    pos_char_map[move_pos_fun.(pos, direction)] == char
+  end)
+end
+
+count_x_mas_fun = fn 
+  pos ->
+    case pos_char_map[pos] do
+      "A" ->
+        direction_chars_list
+        |> Enum.count(fn direction_chars ->
+          check_x_mas_fun.(pos, direction_chars)
+        end)
+        |> case do
+          2 -> 1
+          _ -> 0
+        end
+
+      _ ->
+        0
+    end
+end
+
+pos_char_map
+|> Enum.reduce(0, fn {pos, _}, acc ->
+  acc + count_x_mas_fun.(pos)
+end)
+```
