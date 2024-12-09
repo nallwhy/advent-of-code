@@ -1,0 +1,62 @@
+# Day 3: Mull It Over
+
+```elixir
+Mix.install([:kino])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
+
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2024%2Fday_03.livemd)
+
+https://adventofcode.com/2024/day/3
+
+```elixir
+data =
+  input
+  |> Kino.Input.read()
+```
+
+```elixir
+parse_mul_fun = fn str ->
+  %{"a" => a, "b" => b} = Regex.named_captures(~r/mul\((?<a>\d+),(?<b>\d+)\)/, str)
+
+  String.to_integer(a) * String.to_integer(b)
+end
+
+_answer =
+  data
+  |> then(&Regex.scan(~r/mul\(\d+,\d+\)/, &1))
+  |> List.flatten()
+  |> Enum.map(parse_mul_fun)
+  |> Enum.sum()
+```
+
+## Part 2
+
+https://adventofcode.com/2024/day/3#part2
+
+```elixir
+{answer, _} =
+  data
+  |> then(&Regex.scan(~r/mul\(\d+,\d+\)|do\(\)|don't\(\)/, &1))
+  |> List.flatten()
+  |> Enum.reduce({0, _do? = true}, fn command, {acc, do?} ->
+    case command do
+      "do()" ->
+        {acc, true}
+
+      "don't()" ->
+        {acc, false}
+
+      "mul" <> _ ->
+        case do? do
+          true -> {acc + parse_mul_fun.(command), do?}
+          false -> {acc, do?}
+        end
+    end
+  end)
+
+answer
+```
