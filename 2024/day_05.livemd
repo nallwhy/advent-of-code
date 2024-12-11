@@ -1,0 +1,101 @@
+# Day 5: Print Queue
+
+```elixir
+Mix.install([:kino])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
+
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2024%2Fday_05.livemd)
+
+https://adventofcode.com/2024/day/5
+
+```elixir
+data =
+  input
+  |> Kino.Input.read()
+  |> String.split("\n\n", trim: true)
+  |> Enum.map(& &1 |> String.split("\n", trim: true))
+```
+
+```elixir
+[rule_data, update_data] = data
+
+rules =
+  rule_data
+  |> Enum.map(fn str -> str |> String.split("|") |> Enum.map(&String.to_integer/1) end)
+
+updates =
+  update_data
+  |> Enum.map(fn str -> str |> String.split(",") |> Enum.map(&String.to_integer/1) end)
+
+rule_af_bfs_map =
+  rules
+  |> Enum.group_by(fn [_bf, af] -> af end, fn [bf, _af] -> bf end)
+
+do_check_rule_fun = fn
+  _updated, [] = _queue, _recur_fun ->
+    true
+
+  updated, [h | t] = queue, recur_fun ->
+    bfs = rule_af_bfs_map |> Map.get(h, [])
+
+    case bfs |> Enum.any?(&(&1 in queue)) do
+      true -> false
+      _ -> recur_fun.(updated ++ [h], t, recur_fun)
+    end
+end
+
+check_rule_fun = fn update ->
+  do_check_rule_fun.([], update, do_check_rule_fun)
+end
+
+get_mid_fun = fn update ->
+  mid_index = div(Enum.count(update), 2)
+
+  update |> Enum.at(mid_index)
+end
+
+_answer =
+  updates
+  |> Enum.filter(check_rule_fun)
+  |> Enum.map(get_mid_fun)
+  |> Enum.sum()
+```
+
+## Part 2
+
+https://adventofcode.com/2024/day/5#part2
+
+```elixir
+do_correct_update_fun = fn
+  [], acc, _recur_fun ->
+    acc
+
+  remains, acc, recur_fun ->
+    IO.inspect({remains, acc}, charlists: :as_lists)
+
+    h =
+      remains
+      |> Enum.find(fn remain ->
+        bfs = rule_af_bfs_map |> Map.get(remain, [])
+
+        bfs -- remains == bfs
+      end)
+
+    recur_fun.(remains -- [h], [h | acc], recur_fun)
+end
+
+correct_update_fun = fn update ->
+  do_correct_update_fun.(update, [], do_correct_update_fun)
+end
+
+_answer =
+  updates
+  |> Enum.reject(check_rule_fun)
+  |> Enum.map(correct_update_fun)
+  |> Enum.map(get_mid_fun)
+  |> Enum.sum()
+```
