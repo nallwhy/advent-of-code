@@ -1,0 +1,78 @@
+# Day 7: Bridge Repair
+
+```elixir
+Mix.install([:kino])
+
+input = Kino.Input.textarea("Please paste your input:")
+```
+
+## Part 1
+
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2Fnallwhy%2Fadvent-of-code%2Fblob%2Fmain%2F2024%2Fday_07.livemd)
+
+https://adventofcode.com/2024/day/7
+
+```elixir
+data =
+  input
+  |> Kino.Input.read()
+  |> String.split("\n", trim: true)
+```
+
+```elixir
+calibrations =
+  data
+  |> Enum.map(fn line ->
+    [result_str, nums_str] = line |> String.split(":")
+
+    result = result_str |> String.to_integer()
+    nums = nums_str |> String.split(" ", trim: true) |> Enum.map(&String.to_integer/1)
+
+    {result, nums}
+  end)
+
+do_check_calibration_fun = fn
+  current, [], _ops, result, _recur_fun ->
+    current == result
+
+  current, [h | t] = _nums, ops, result, recur_fun ->
+    case current > result do
+      true ->
+        false
+
+      false ->
+        ops
+        |> Enum.any?(fn op ->
+          recur_fun.(op.(current, h), t, ops, result, recur_fun)
+        end)
+    end
+end
+
+check_calibration_fun = fn {result, [h | t] = _nums}, ops ->
+  do_check_calibration_fun.(h, t, ops, result, do_check_calibration_fun)
+end
+
+ops = [&Kernel.+/2, &Kernel.*/2]
+
+calibrations
+|> Enum.filter(& check_calibration_fun.(&1, ops))
+|> Enum.map(fn {result, _} -> result end)
+|> Enum.sum()
+```
+
+## Part 2
+
+https://adventofcode.com/2024/day/7#part2
+
+```elixir
+concat_fun = fn a, b ->
+  "#{a}#{b}" |> String.to_integer()
+end
+
+ops = [&Kernel.+/2, &Kernel.*/2, concat_fun]
+
+calibrations
+|> Enum.filter(& check_calibration_fun.(&1, ops))
+|> Enum.map(fn {result, _} -> result end)
+|> Enum.sum()
+```
